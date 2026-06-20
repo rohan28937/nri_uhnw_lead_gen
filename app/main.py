@@ -43,7 +43,7 @@ def index(request: Request, db: Session = Depends(get_db),
           sector: str | None = Query(None), region: str | None = Query(None),
           country: str | None = Query(None), q: str | None = Query(None)):
     people = [_ctx(p) for p in query_people(db, sector, region, country, q)]
-    return templates.TemplateResponse("index.html", {
+    return templates.TemplateResponse(request, "index.html", {
         "request": request, "profiles": people, "facets": facet_counts(db),
         "home_url": "/", "static": "/static"})
 
@@ -53,7 +53,7 @@ def profile(slug: str, request: Request, db: Session = Depends(get_db)):
     person = db.query(Person).filter(Person.slug == slug).first()
     if not person:
         raise HTTPException(404, "Profile not found")
-    return templates.TemplateResponse("profile.html", {
+    return templates.TemplateResponse(request, "profile.html", {
         "request": request, "p": _ctx(person), "home_url": "/", "static": "/static"})
 
 
