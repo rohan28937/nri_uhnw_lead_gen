@@ -3,7 +3,7 @@ services:
   - type: web
     name: nri-uhnw-lead-intelligence
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /healthz
     autoDeploy: true
     # No persistent disk: the SQLite DB lives in the image and reseeds from
