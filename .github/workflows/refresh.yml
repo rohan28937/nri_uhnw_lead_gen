@@ -1,0 +1,38 @@
+name: Weekly lead refresh
+on:
+  schedule:
+    - cron: "0 6 * * 1"     # 06:00 UTC every Monday (weekly)
+  workflow_dispatch: {}      # allow manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: Rebuild dataset + snapshot (EDGAR + events + seed)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          python build_dataset.py
+          python -m app.ingest
+      - name: Enrich profiles (news + contacts) if keys set
+        env:
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
+          APOLLO_API_KEY: ${{ secrets.APOLLO_API_KEY }}
+        run: python -m app.enrich --extras
+      - name: Commit refreshed data
+        run: |
+          git config user.name "lead-refresh-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/snapshot.json data/seed_leads.csv data/watchlist.csv data/profile_extras.json
+          git commit -m "chore: weekly lead refresh $(date -u +%Y-%m-%d)" || echo "no changes"
+          git push
+      - name: Trigger deploy refresh (optional)
+        if: ${{ secrets.DEPLOY_REFRESH_URL != '' }}
+        run: curl -fsS -X POST "${{ secrets.DEPLOY_REFRESH_URL }}" || echo "refresh hook failed (non-fatal)"
