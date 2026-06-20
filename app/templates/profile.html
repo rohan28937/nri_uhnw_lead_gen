@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ p.name }} · UHNW Profile{% endblock %}
+{% block content %}
+<a class="back" href="{{ home_url }}">← All prospects</a>
+
+<section class="profile-head">
+  {% if p.photo_file %}<img class="photo" src="{{ static }}/photos/{{ p.photo_file }}" alt="{{ p.name }}">
+  {% elif p.photo_url %}<img class="photo" src="{{ p.photo_url }}" alt="{{ p.name }}">
+  {% else %}<span class="avatar lg" title="No rights-cleared photo yet">{{ p.initials }}</span>{% endif %}
+  <div class="ph-meta">
+    <h1>{{ p.name }}</h1>
+    <div class="muted">{{ p.role }}{% if p.company %} · {{ p.company }}{% endif %}</div>
+    <div class="tags">
+      <span class="tag">{{ p.sector }}</span>
+      <span class="tag">{{ p.region }}{% if p.country %} · {{ p.country }}{% endif %}</span>
+      {% if p.diaspora_category %}<span class="tag">{{ p.diaspora_category }}</span>{% endif %}
+      {% if p.exchange_ticker %}<span class="tag mono">{{ p.exchange_ticker }}</span>{% endif %}
+      {% if p.has_europe %}<span class="tag eu">🇪🇺 Active in Europe</span>{% endif %}
+    </div>
+  </div>
+  <div class="score-box b-{{ p.priority[0]|lower if p.priority else 'c' }}">
+    <div class="score">{{ p.lead_score }}</div><div class="pri">{{ p.priority }}</div>
+  </div>
+</section>
+
+<div class="cols">
+  <div class="col-main">
+    <div class="panel">
+      <h2>Background</h2>
+      {% if p.background %}<p>{{ p.background }}</p>{% else %}<p class="muted">No background yet — enrich on next refresh.</p>{% endif %}
+    </div>
+
+    <div class="panel intel">
+      <h2>Wealth &amp; advisory intelligence</h2>
+      <table class="kv">
+        <tr><td>Family office</td><td>{{ p.family_office }}</td></tr>
+        <tr><td>Uses (wealth mgrs)</td><td>{% if p.wealth_managers %}{{ p.wealth_managers|join(", ") }}{% else %}<span class="muted">Not on record — enrich / CRM</span>{% endif %}</td></tr>
+        <tr><td>Fund managers</td><td>{% if p.fund_managers %}{{ p.fund_managers|join(", ") }}{% else %}<span class="muted">Not on record</span>{% endif %}</td></tr>
+        <tr><td>Investment preference</td><td>{% if p.investment_preferences %}{{ p.investment_preferences|join("; ") }}{% else %}<span class="muted">Assess</span>{% endif %}</td></tr>
+        <tr><td>Appetite for new capital</td><td>{{ p.investment_appetite }}</td></tr>
+        <tr><td>Openness to meet new firms</td><td><b>{{ p.openness_to_meet }}</b></td></tr>
+      </table>
+      <p class="warn">Soft signals marked "(est.)" are modelled from liquidity recency &amp; reachability — confirm via research/CRM before relying on them.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Liquidity signal</h2>
+      <p class="signal-lg">⚡ {{ p.liquidity_signal }}</p>
+      <table class="kv">
+        <tr><td>Event</td><td>{{ p.event_type }} · {{ p.event_date }}</td></tr>
+        {% if p.est_liquid_wealth_usd_m %}<tr><td>Est. liquid wealth</td><td>${{ '{:,.0f}'.format(p.est_liquid_wealth_usd_m) }}m <span class="muted">(modelled — verify)</span></td></tr>{% endif %}
+        {% if p.stake_pct %}<tr><td>Disclosed stake</td><td>{{ p.stake_pct }}%</td></tr>{% endif %}
+        {% if p.city %}<tr><td>Based in</td><td>{{ p.city }}</td></tr>{% endif %}
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Movement history <span class="muted">· public appearances</span></h2>
+      {% if p.movements %}
+        {% if p.has_europe %}<div class="eu-note">🇪🇺 In Europe: {% for m in p.europe_movements %}{{ m.place }} ({{ m.date }}){% if not loop.last %}; {% endif %}{% endfor %}</div>{% else %}<div class="muted small">No European appearances on public record.</div>{% endif %}
+        <ul class="timeline">{% for m in p.movements %}<li><span class="tdate">{{ m.date }}</span> <b>{{ m.place }}</b> — {{ m.event }}{% if m.source %} <a href="{{ m.source }}" target="_blank" rel="noopener">↗</a>{% endif %}{% if m.auto %} <span class="auto">auto · verify</span>{% endif %}</li>{% endfor %}</ul>
+      {% else %}<p class="muted">No public appearances on record — connect a news/events feed to auto-populate. (Limited to publicly announced events, not private travel.)</p>{% endif %}
+    </div>
+
+    <div class="panel">
+      <h2>Upcoming visits <span class="muted">· announced only</span></h2>
+      {% if p.upcoming %}<ul class="timeline">{% for u in p.upcoming %}<li><span class="tdate">{{ u.date }}</span> <b>{{ u.place }}</b> — {{ u.event }}{% if u.source %} <a href="{{ u.source }}" target="_blank" rel="noopener">↗</a>{% endif %}{% if u.auto %} <span class="auto">auto · verify</span>{% endif %}</li>{% endfor %}</ul>
+      {% else %}<p class="muted">None on public record. Set a SERPER/events key to track announced conference &amp; keynote appearances.</p>{% endif %}
+    </div>
+
+    <div class="panel">
+      <h2>In the news</h2>
+      {% if p.news %}<ul class="news">{% for n in p.news %}<li><a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.title }}</a></li>{% endfor %}</ul>
+      {% else %}<p class="muted">No clippings yet — connect a news/search API key to auto-populate.</p>{% endif %}
+    </div>
+  </div>
+
+  <aside class="col-side">
+    <div class="panel">
+      <h2>Important trivia</h2>
+      {% if p.trivia %}<ul class="ticks">{% for t in p.trivia %}<li>{{ t }}</li>{% endfor %}</ul>{% else %}<p class="muted">—</p>{% endif %}
+    </div>
+    <div class="panel">
+      <h2>Good to know</h2>
+      {% if p.good_to_knows %}<ul class="ticks">{% for g in p.good_to_knows %}<li>{{ g }}</li>{% endfor %}</ul>{% else %}<p class="muted">—</p>{% endif %}
+    </div>
+    <div class="panel">
+      <h2>Funds &amp; affiliations</h2>
+      {% if p.funds_affiliations %}<ul class="pills">{% for fnd in p.funds_affiliations %}<li>{{ fnd }}</li>{% endfor %}</ul>{% else %}<p class="muted">—</p>{% endif %}
+    </div>
+    <div class="panel">
+      <h2>Contact pathway</h2>
+      <p>{{ p.contact_pathway or "Enrich via licensed provider (Apollo/ZoomInfo) — no personal contact stored." }}</p>
+      {% if p.linkedin %}<p><a href="{{ p.linkedin }}" target="_blank" rel="noopener">LinkedIn ↗</a></p>{% endif %}
+    </div>
+    <div class="panel">
+      <h2>Source</h2>
+      <p class="muted">{{ p.public_source }}</p>
+      {% if p.source_url %}<p><a href="{{ p.source_url }}" target="_blank" rel="noopener">Primary source ↗</a></p>{% endif %}
+      <p class="warn">{{ p.notes }}</p>
+    </div>
+  </aside>
+</div>
+{% endblock %}

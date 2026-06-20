@@ -1,0 +1,20 @@
+# Render.com one-click Blueprint. In Render: New → Blueprint → point at this repo.
+services:
+  - type: web
+    name: nri-uhnw-lead-intelligence
+    runtime: docker
+    plan: starter
+    healthCheckPath: /healthz
+    autoDeploy: true
+    # No persistent disk: the SQLite DB lives in the image and reseeds from
+    # data/snapshot.json on startup. Render injects PORT; the app reads DATABASE_URL
+    # if set, else defaults to the bundled sqlite DB. Enrichment is rebuilt via /admin/refresh.
+    envVars:
+      - key: ADMIN_TOKEN
+        generateValue: true      # random token; used for POST /admin/refresh
+      - key: SEC_USER_AGENT
+        sync: false              # set in dashboard: "YourFirm research you@firm.com"
+      - key: SERPER_API_KEY
+        sync: false              # optional: news + appearances enrichment
+      - key: APOLLO_API_KEY
+        sync: false              # optional: contact + photo enrichment

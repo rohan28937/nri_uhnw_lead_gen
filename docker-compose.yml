@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      - DATABASE_URL=sqlite:////app/data/leads.db
+      - SEC_USER_AGENT=${SEC_USER_AGENT:-}
+      - SERPER_API_KEY=${SERPER_API_KEY:-}
+      - APOLLO_API_KEY=${APOLLO_API_KEY:-}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-changeme}
+    volumes:
+      - ./data:/app/data

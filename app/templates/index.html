@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>UHNW NRI / OCI prospects</h1>
+<p class="muted lead">{{ profiles|length }} signal-driven leads · ranked by liquidity-event freshness, magnitude &amp; addressability.</p>
+
+<div class="controls">
+  <input id="q" type="search" placeholder="Search name or company…" oninput="applyFilters()">
+  <select id="sector" onchange="applyFilters()"><option value="">All sectors</option>
+    {% for k,v in facets.sector.items() %}<option value="{{ k }}">{{ k }} ({{ v }})</option>{% endfor %}
+  </select>
+  <select id="region" onchange="applyFilters()"><option value="">All regions</option>
+    {% for k,v in facets.region.items() %}<option value="{{ k }}">{{ k }} ({{ v }})</option>{% endfor %}
+  </select>
+  <select id="country" onchange="applyFilters()"><option value="">All countries</option>
+    {% for k,v in facets.country.items() %}<option value="{{ k }}">{{ k }} ({{ v }})</option>{% endfor %}
+  </select>
+  <span id="count" class="muted"></span>
+</div>
+
+<div class="grid" id="grid">
+  {% for p in profiles %}
+  <a class="card" href="{{ p.url }}"
+     data-name="{{ p.name|lower }}" data-company="{{ p.company|lower }}"
+     data-sector="{{ p.sector }}" data-region="{{ p.region }}" data-country="{{ p.country }}">
+    <div class="card-head">
+      <span class="avatar">{{ p.initials }}</span>
+      <span class="badge b-{{ p.priority[0]|lower if p.priority else 'c' }}">{{ p.lead_score }}</span>
+    </div>
+    <div class="card-name">{{ p.name }}</div>
+    <div class="card-role muted">{{ p.role }}{% if p.company %} · {{ p.company }}{% endif %}</div>
+    <div class="tags">
+      <span class="tag">{{ p.sector }}</span>
+      <span class="tag">{{ p.region }}</span>
+      {% if p.exchange_ticker %}<span class="tag mono">{{ p.exchange_ticker }}</span>{% endif %}
+    </div>
+    <div class="signal muted">⚡ {{ p.liquidity_signal }}</div>
+  </a>
+  {% endfor %}
+</div>
+
+<script>
+function applyFilters(){
+  var q=document.getElementById('q').value.toLowerCase();
+  var s=document.getElementById('sector').value, r=document.getElementById('region').value, c=document.getElementById('country').value;
+  var n=0;
+  document.querySelectorAll('#grid .card').forEach(function(el){
+    var ok=(!q||el.dataset.name.includes(q)||el.dataset.company.includes(q))
+      &&(!s||el.dataset.sector===s)&&(!r||el.dataset.region===r)&&(!c||el.dataset.country===c);
+    el.style.display=ok?'':'none'; if(ok)n++;
+  });
+  document.getElementById('count').textContent=n+' shown';
+}
+applyFilters();
+</script>
+{% endblock %}

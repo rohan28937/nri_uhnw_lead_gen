@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}NRI/OCI UHNW Lead Intelligence{% endblock %}</title>
+  <link rel="stylesheet" href="{{ static }}/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ home_url }}">◆ NRI·OCI UHNW <span>Lead Intelligence</span></a>
+    <div class="muted">Signal-driven · refreshed weekly</div>
+  </header>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="foot muted">
+    Public/modelled data for prospecting research only — verify identity, origin/residency &amp; holdings before outreach. See COMPLIANCE.md.
+  </footer>
+</body>
+</html>

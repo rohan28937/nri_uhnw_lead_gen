@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+data/leads.db
+site_preview/
+output/
+.DS_Store
+.~lock.*#

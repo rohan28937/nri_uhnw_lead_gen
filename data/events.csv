@@ -1,0 +1,4 @@
+name,role,company,diaspora_category,country,region,industry,exchange_ticker,event_type,event_date,event_value_usd_m,stake_pct,est_liquid_wealth_usd_m,liquidity_signal,public_source,source_url,addressability,diaspora_fit
+Bipul Sinha,Co-founder & CEO,Rubrik,OCI / Indian-origin,USA,USA & Canada,Cybersecurity,NYSE: RBRK,lockup_expiry,2024-10,,7.6,900,IPO lock-up expired ~Oct-2024 - restricted shares now sellable,Rubrik prospectus,https://www.sec.gov,4,5
+Jitendra Mohan,Co-founder & CEO,Astera Labs,OCI / Indian-origin (verify),USA,USA & Canada,Semiconductors,NASDAQ: ALAB,lockup_expiry,2024-09,,,1200,IPO lock-up expired ~Sep-2024 - first window to sell,Astera prospectus,https://www.sec.gov,4,4
+TEMPLATE - add new events here,Founder/CEO/CFO,Company,OCI / Indian-origin (verify),USA,USA & Canada,Sector,EXCH: TICK,ipo,2026-01,,,100,Describe the liquidity event + timing,source,https://,3,4

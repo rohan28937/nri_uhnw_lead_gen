@@ -1,0 +1,53 @@
+# Copy to config.yaml and fill in. Only enabled sources with valid keys/files run.
+# All money thresholds in $ MILLIONS.
+min_liquid_usd_m: 30        # UHNW floor on addressable liquid wealth
+
+sources:
+  # 1) Curated signal-tagged seed (offline, always works)
+  seed_csv:
+    enabled: true
+    path: data/seed_leads.csv
+
+  # 2) SEC EDGAR — FREE, no key. THE exclusivity engine.
+  #    Expands the company watchlist into individual insiders (Form 4 sales / Form 3 new insiders).
+  sec_edgar:
+    enabled: true
+    user_agent: "YourFirm research yourname@yourfirm.com"   # SEC requires a real UA
+    use_watchlist: true            # read company names from data/watchlist.csv
+    watchlist_csv: data/watchlist.csv
+    forms: "4"                     # "4"=insider txns, "3"=new insiders, "4,3" for both
+    max_per_query: 10
+    queries: []                    # extra ad-hoc company/person names
+
+  # 3) IPO / M&A / lock-up-expiry events (curated feed). Maintain data/events.csv.
+  ipo_ma:
+    enabled: true
+    path: data/events.csv
+
+  # 4) Crunchbase — funded/exited founder discovery (key required). https://data.crunchbase.com
+  crunchbase:
+    enabled: false
+    api_key: ""
+    funding_types: ["series_c", "series_d", "series_e"]
+    limit: 50
+
+  # 5) Web search via Serper.dev (key). Discovery for fresh liquidity events.
+  web_search:
+    enabled: false
+    serper_api_key: ""
+    num: 10
+    region_hint: "Gulf"
+    event_hint: "ipo"
+    queries:
+      - "Indian origin founder IPO 2025 lock-up expiry"
+      - "Indian American founder company acquired 2025"
+      - "NRI founder secondary share sale 2025"
+
+  # 6) Paid B2B enrichment (Apollo.io, key). Adds contact/firmographic data.
+  apollo:
+    enabled: false
+    api_key: ""
+    titles: ["Founder", "Co-Founder", "CEO", "CTO", "Managing Director"]
+    locations: ["Dubai", "London", "Singapore", "New York", "Toronto"]
+    keywords: "Indian founder exit IPO wealth"
+    per_page: 25
